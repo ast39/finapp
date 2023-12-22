@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Http\Filters\CabinetCreditFilter;
 use App\Http\Resources\MessageResource;
 use App\Models\CabinetCredit;
+use App\Swagger\Controllers\Auth;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -75,6 +76,7 @@ class CabinetCreditService {
         DB::beginTransaction();
 
         try {
+            $data['owner'] = auth()->id();
             CabinetCredit::create($data);
 
             DB::commit();
