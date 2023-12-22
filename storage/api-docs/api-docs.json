@@ -1,0 +1,818 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "FinApp Platform Api",
+        "description": "FinApp platform Api",
+        "contact": {
+            "name": "ASt",
+            "email": "alexandr.statut@instafxgroup.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://my-default-host.com",
+            "description": "Dev API server"
+        }
+    ],
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "Авторизация"
+                ],
+                "summary": "Авторизоваться в API",
+                "description": "Авторизоваться в API",
+                "operationId": "auth.login",
+                "requestBody": {
+                    "description": "Учетные данные пользователя",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "login",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "login": {
+                                        "title": "Логин пользователя",
+                                        "type": "string",
+                                        "example": "tester",
+                                        "nullable": "false"
+                                    },
+                                    "password": {
+                                        "title": "Пароль пользователя",
+                                        "type": "string",
+                                        "example": "qwerty12",
+                                        "nullable": "false"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "JWT токен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/token"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/user": {
+            "get": {
+                "tags": [
+                    "Авторизация"
+                ],
+                "summary": "Текущий пользователь",
+                "description": "Информация об авторизованном пользователе",
+                "operationId": "auth.user",
+                "responses": {
+                    "200": {
+                        "description": "Данные пользователя",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/user"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "500": {
+                        "description": "Server not available"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": [
+                    "Авторизация"
+                ],
+                "summary": "Выход",
+                "description": "Выход",
+                "operationId": "auth.logout",
+                "responses": {
+                    "200": {
+                        "description": "Результат действия",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "msg": {
+                                            "title": "Результат действия",
+                                            "type": "string",
+                                            "example": "Success",
+                                            "nullable": "false"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "500": {
+                        "description": "Server not available"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "tags": [
+                    "Авторизация"
+                ],
+                "summary": "Обновить токен",
+                "description": "Обновить токен",
+                "operationId": "auth.refresh",
+                "responses": {
+                    "200": {
+                        "description": "JWT токен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/token"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "500": {
+                        "description": "Server not available"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/cabinet/credit": {
+            "get": {
+                "tags": [
+                    "Текущие кредиты"
+                ],
+                "summary": "Список кредитов",
+                "description": "Список кредитов",
+                "operationId": "v1.cqbinet.credit.index",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Номер страницы",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Записей на страницу",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "title",
+                        "in": "query",
+                        "description": "Заголовок кредита",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "creditor",
+                        "in": "query",
+                        "description": "Кредитор",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Информация о кредитах",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "title": "Кредиты",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/CabinetCredit"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "server not available"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Текущие кредиты"
+                ],
+                "summary": "Добавить кредит",
+                "description": "Добавить кредит",
+                "operationId": "v1.cabinet.credit.store",
+                "requestBody": {
+                    "description": "Данные города",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "title": "Название кредита",
+                                        "type": "integer",
+                                        "example": "Credit",
+                                        "nullable": "false"
+                                    },
+                                    "creditor": {
+                                        "title": "КРедитор (Банк)",
+                                        "type": "string",
+                                        "example": "Bank",
+                                        "nullable": "false"
+                                    },
+                                    "amount": {
+                                        "title": "Сумма",
+                                        "type": "numeric",
+                                        "format": "double",
+                                        "example": "100000",
+                                        "nullable": "false"
+                                    },
+                                    "percent": {
+                                        "title": "Процент",
+                                        "type": "numeric",
+                                        "format": "double",
+                                        "example": "20",
+                                        "nullable": "false"
+                                    },
+                                    "period": {
+                                        "title": "Срок в месяцах",
+                                        "type": "numeric",
+                                        "format": "double",
+                                        "example": "24",
+                                        "nullable": "false"
+                                    },
+                                    "payment": {
+                                        "title": "Платеж",
+                                        "type": "numeric",
+                                        "format": "double",
+                                        "example": "5000",
+                                        "nullable": "false"
+                                    },
+                                    "start_date": {
+                                        "title": "Дата взятия кредита",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-12-01",
+                                        "nullable": "false"
+                                    },
+                                    "payment_date": {
+                                        "title": "День платежа",
+                                        "type": "integer",
+                                        "example": "25",
+                                        "nullable": "false"
+                                    },
+                                    "status": {
+                                        "title": "Статус кредита",
+                                        "type": "integer",
+                                        "example": "1",
+                                        "nullable": "true"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Результат действия",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mesage": {
+                                            "title": "Результат действия",
+                                            "type": "string",
+                                            "example": "Success",
+                                            "nullable": "false"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "500": {
+                        "description": "server not available"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/cabinet/credit/{id}": {
+            "get": {
+                "tags": [
+                    "Текущие кредиты"
+                ],
+                "summary": "Просмотр отдельного кредита",
+                "description": "Просмотр отдельного кредита",
+                "operationId": "v1.cabinet.credit.show",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID кредита",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Информация о кредите",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/CabinetCredit"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "server not available"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Текущие кредиты"
+                ],
+                "summary": "Обновление кредита",
+                "description": "Обновление кредита",
+                "operationId": "v1.cabinet.credit.update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID кредита",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Данные города",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "title": "Название кредита",
+                                        "type": "integer",
+                                        "example": "Credit",
+                                        "nullable": "true"
+                                    },
+                                    "creditor": {
+                                        "title": "КРедитор (Банк)",
+                                        "type": "string",
+                                        "example": "Bank",
+                                        "nullable": "true"
+                                    },
+                                    "amount": {
+                                        "title": "Сумма",
+                                        "type": "numeric",
+                                        "format": "double",
+                                        "example": "100000",
+                                        "nullable": "true"
+                                    },
+                                    "percent": {
+                                        "title": "Процент",
+                                        "type": "numeric",
+                                        "format": "double",
+                                        "example": "20",
+                                        "nullable": "true"
+                                    },
+                                    "period": {
+                                        "title": "Срок в месяцах",
+                                        "type": "numeric",
+                                        "format": "double",
+                                        "example": "24",
+                                        "nullable": "true"
+                                    },
+                                    "payment": {
+                                        "title": "Платеж",
+                                        "type": "numeric",
+                                        "format": "double",
+                                        "example": "5000",
+                                        "nullable": "true"
+                                    },
+                                    "start_date": {
+                                        "title": "Дата взятия кредита",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-12-01",
+                                        "nullable": "true"
+                                    },
+                                    "payment_date": {
+                                        "title": "День платежа",
+                                        "type": "integer",
+                                        "example": "25",
+                                        "nullable": "true"
+                                    },
+                                    "status": {
+                                        "title": "Статус кредита",
+                                        "type": "integer",
+                                        "example": "1",
+                                        "nullable": "true"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Результат действия",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mesage": {
+                                            "title": "Результат действия",
+                                            "type": "string",
+                                            "example": "Success",
+                                            "nullable": "false"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "500": {
+                        "description": "server not available"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Текущие кредиты"
+                ],
+                "summary": "Удаление кредита",
+                "description": "Удаление кредита по айди",
+                "operationId": "v1.cabinet.credit.delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID кредита",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Результат действия",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mesage": {
+                                            "title": "Результат действия",
+                                            "type": "string",
+                                            "example": "Success",
+                                            "nullable": "false"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "500": {
+                        "description": "server not available"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CabinetCredit": {
+                "title": "Информация по кредиту",
+                "properties": {
+                    "title": {
+                        "title": "Название кредита",
+                        "type": "integer",
+                        "example": "Credit"
+                    },
+                    "creditor": {
+                        "title": "Кредитор (Банк)",
+                        "type": "string",
+                        "example": "Bank"
+                    },
+                    "amount": {
+                        "title": "Сумма",
+                        "type": "numeric",
+                        "format": "double",
+                        "example": "100000"
+                    },
+                    "percent": {
+                        "title": "Процент",
+                        "type": "numeric",
+                        "format": "double",
+                        "example": "20"
+                    },
+                    "period": {
+                        "title": "Срок в месяцах",
+                        "type": "numeric",
+                        "format": "double",
+                        "example": "24"
+                    },
+                    "payment": {
+                        "title": "Платеж",
+                        "type": "numeric",
+                        "format": "double",
+                        "example": "5000"
+                    },
+                    "start_date": {
+                        "title": "Дата взятия кредита",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2023-12-01"
+                    },
+                    "payment_date": {
+                        "title": "День платежа",
+                        "type": "integer",
+                        "example": "25"
+                    },
+                    "status": {
+                        "title": "Статус кредита",
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "payments": {
+                        "title": "Платежи по кредиту",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Payment"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "Payment": {
+                "title": "Информация о платеже",
+                "properties": {
+                    "payment_id": {
+                        "title": "ID платежа",
+                        "type": "integer",
+                        "example": "Credit"
+                    },
+                    "payment_date": {
+                        "title": "Дата платежа",
+                        "type": "integer",
+                        "example": "2017-12-01"
+                    },
+                    "amount": {
+                        "title": "Сумма",
+                        "type": "numeric",
+                        "format": "double",
+                        "example": "100000"
+                    },
+                    "note": {
+                        "title": "Комментарий к платежу",
+                        "type": "string",
+                        "example": "Test"
+                    }
+                },
+                "type": "object"
+            },
+            "token": {
+                "title": "Токен авторизации",
+                "properties": {
+                    "access_token": {
+                        "title": "Токен",
+                        "type": "string",
+                        "example": "abcdef1234"
+                    },
+                    "type": {
+                        "title": "Тип токена",
+                        "type": "string",
+                        "example": "Bearer"
+                    },
+                    "expires_in": {
+                        "title": "Время экспирации",
+                        "type": "integer",
+                        "example": "3600"
+                    }
+                },
+                "type": "object"
+            },
+            "user": {
+                "title": "Информация о пользователе",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "name": {
+                        "title": "Имя",
+                        "type": "string",
+                        "example": "Admin"
+                    },
+                    "login": {
+                        "title": "Логин",
+                        "type": "string",
+                        "example": "Admin"
+                    },
+                    "email": {
+                        "title": "E-mail",
+                        "type": "string",
+                        "example": "test@gmail.com"
+                    },
+                    "verified": {
+                        "title": "Время верификации",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "null",
+                        "nullable": "true"
+                    },
+                    "created": {
+                        "title": "Время создания",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-10-04T16:33:11.000000Z"
+                    },
+                    "updated": {
+                        "title": "Последнее обновление",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-10-04T16:33:11.000000Z"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "responses": {
+            "400": {
+                "description": "Bad Request"
+            },
+            "401": {
+                "description": "Unauthenticated"
+            },
+            "500": {
+                "description": "Server not available"
+            }
+        },
+        "securitySchemes": {
+            "apiAuth": {
+                "type": "http",
+                "description": "Your token must be provided by Admin",
+                "name": "Api Client",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Авторизация",
+            "description": "Авторизация Авторизация в API"
+        },
+        {
+            "name": "Текущие кредиты",
+            "description": "Текущий кредит"
+        }
+    ],
+    "externalDocs": {
+        "description": "Docs",
+        "url": "https://127.0.0.1/api/docs"
+    }
+}
