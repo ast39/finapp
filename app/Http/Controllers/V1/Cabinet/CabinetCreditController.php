@@ -36,11 +36,7 @@ class CabinetCreditController extends Controller {
      */
     public function index(CabinetCreditFilterRequest $request): JsonResource
     {
-        return CabinetCreditResource::collection(
-            $this->creditService->index(
-                $request->validated()
-            )
-        );
+        return $this->creditService->index($request->validated());
     }
 
     /**
@@ -51,9 +47,7 @@ class CabinetCreditController extends Controller {
      */
     public function show(int $id): JsonResource
     {
-        return CabinetCreditResource::collection(
-            $this->creditService->show($id)
-        );
+        return $this->creditService->show($id);
     }
 
     /**

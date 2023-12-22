@@ -1,8 +1,7 @@
 <?php
 
 use App\Http\Controllers\V1\AuthController;
-use App\Http\Controllers\V1\Calculate\CalculateCreditController;
-use App\Http\Controllers\V1\Checking\CheckingCreditController;
+use App\Http\Controllers\V1\Cabinet\CabinetCreditController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 
@@ -21,24 +20,9 @@ Route::prefix('auth')->controller(AuthController::class)->group(function() {
 Route::group(['prefix' => 'cabinet'], function() {
 
     # My Credits
-    Route::apiResource('credit', \App\Http\Controllers\V1\Cabinet\CabinetCreditController::class);
+    Route::apiResource('credit', CabinetCreditController::class);
 
-});
-
-# Calculation
-Route::group(['prefix' => 'calculate'], function() {
-
-    # Calculate Credit
-    Route::apiResource('credit', CalculateCreditController::class);
-});
-
-# Checking
-Route::group(['prefix' => 'check'], function() {
-
-    # Check credit conditions
-    Route::apiResource('credit', CheckingCreditController::class);
-});
-
+})->middleware('auth:api');;
 
 Route::fallback(function(){
     return response()->json([

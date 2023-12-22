@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
 
 
 class CabinetCredit extends Model {
+
+    use Filterable;
+
 
     protected $table = 'cabinet_credits';
 

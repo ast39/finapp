@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Http\Filters\CabinetCreditFilter;
+use App\Http\Resources\Cabinet\Credit\CabinetCreditResource;
 use App\Http\Resources\MessageResource;
 use App\Models\CabinetCredit;
 use App\Swagger\Controllers\Auth;
@@ -18,8 +19,6 @@ class CabinetCreditService {
      */
     public function index(array $data): JsonResource
     {
-        DB::beginTransaction();
-
         try {
             $filter = app()->make(CabinetCreditFilter::class, [
                 'queryParams' => $data
@@ -32,12 +31,8 @@ class CabinetCreditService {
                 ? $credits->get()
                 : $credits->paginate($data['limit']);
 
-            DB::commit();
-
-            return $credits;
+            return CabinetCreditResource::collection($credits);
         } catch (\Exception $e) {
-
-            DB::rollBack();
             Log::error(__CLASS__, ['msg' => $e->getMessage()]);
 
             return new MessageResource(__('msg.serverNotAvailable'),500);
@@ -50,17 +45,11 @@ class CabinetCreditService {
      */
     public function show(int $id): JsonResource
     {
-        DB::beginTransaction();
-
         try {
             $credit = CabinetCredit::findOrFail($id);
 
-            DB::commit();
-
-            return $credit;
+            return CabinetCreditResource::make($credit);
         } catch (\Exception $e) {
-
-            DB::rollBack();
             Log::error(__CLASS__, ['msg' => $e->getMessage()]);
 
             return new MessageResource(__('msg.serverNotAvailable'),500);
@@ -76,7 +65,7 @@ class CabinetCreditService {
         DB::beginTransaction();
 
         try {
-            $data['owner'] = auth()->id();
+            $data['owner'] = auth('api')->id();
             CabinetCredit::create($data);
 
             DB::commit();
