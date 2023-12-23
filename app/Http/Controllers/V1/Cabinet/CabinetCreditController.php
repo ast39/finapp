@@ -8,6 +8,8 @@ use App\Http\Requests\Cabinet\Credit\CabinetCreditStoreRequest;
 use App\Http\Requests\Cabinet\Credit\CabinetCreditUpdateRequest;
 use App\Http\Resources\Cabinet\Credit\CabinetCreditResource;
 use App\Http\Services\CabinetCreditService;
+use App\Models\CabinetCredit;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 
@@ -58,11 +60,7 @@ class CabinetCreditController extends Controller {
      */
     public function store(CabinetCreditStoreRequest $request): JsonResource
     {
-        return CabinetCreditResource::collection(
-            $this->creditService->store(
-                $request->validated()
-            )
-        );
+        return $this->creditService->store($request->validated());
     }
 
     /**
@@ -74,11 +72,9 @@ class CabinetCreditController extends Controller {
      */
     public function update(CabinetCreditUpdateRequest $request, int $id): JsonResource
     {
-        return CabinetCreditResource::collection(
-            $this->creditService->update(
-                $request->validated(),
-                $id
-            )
+        return $this->creditService->update(
+            $request->validated(),
+            $id
         );
     }
 
@@ -90,8 +86,6 @@ class CabinetCreditController extends Controller {
      */
     public function destroy(int $id): JsonResource
     {
-        return CabinetCreditResource::collection(
-            $this->creditService->destroy($id)
-        );
+        return $this->creditService->destroy($id);
     }
 }

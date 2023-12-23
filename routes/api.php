@@ -20,9 +20,9 @@ Route::prefix('auth')->controller(AuthController::class)->group(function() {
 Route::group(['prefix' => 'cabinet'], function() {
 
     # My Credits
-    Route::apiResource('credit', CabinetCreditController::class);
+    Route::apiResource('credit', CabinetCreditController::class)->middleware('auth:api');
 
-})->middleware('auth:api');;
+});
 
 Route::fallback(function(){
     return response()->json([

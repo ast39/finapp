@@ -3,7 +3,9 @@
 return [
 
     'serverNotAvailable' => 'Сервер временно не доступен',
-    'created' => 'Добавлено',
-    'updated' => 'Обновлено',
-    'deleted' => 'Удалено',
+    'success' => 'Успешно',
+    'failed' => 'Не выполнено',
+    'credit' => [
+        'notFound' => 'Кредит не найден',
+    ],
 ];

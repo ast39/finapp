@@ -4,9 +4,9 @@ namespace App\Http\Services;
 
 use App\Http\Filters\CabinetCreditFilter;
 use App\Http\Resources\Cabinet\Credit\CabinetCreditResource;
-use App\Http\Resources\MessageResource;
+use App\Http\Resources\ErrorResource;
 use App\Models\CabinetCredit;
-use App\Swagger\Controllers\Auth;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -15,9 +15,9 @@ class CabinetCreditService {
 
     /**
      * @param array $data
-     * @return JsonResource
+     * @return JsonResource|JsonResponse
      */
-    public function index(array $data): JsonResource
+    public function index(array $data): JsonResource|JsonResponse
     {
         try {
             $filter = app()->make(CabinetCreditFilter::class, [
@@ -35,97 +35,111 @@ class CabinetCreditService {
         } catch (\Exception $e) {
             Log::error(__CLASS__, ['msg' => $e->getMessage()]);
 
-            return new MessageResource(__('msg.serverNotAvailable'),500);
+            return ErrorResource::make(new AppErrorService(500, __('msg.serverNotAvailable'), $e->getMessage()));
         }
     }
 
     /**
      * @param int $id
-     * @return JsonResource
+     * @return JsonResource|JsonResponse
      */
-    public function show(int $id): JsonResource
+    public function show(int $id): JsonResource|JsonResponse
     {
         try {
-            $credit = CabinetCredit::findOrFail($id);
+            $credit = CabinetCredit::find($id);
+
+            if (!$credit) {
+                return ErrorResource::make(new AppErrorService(404, __('msg.credit.notFound')));
+            }
 
             return CabinetCreditResource::make($credit);
         } catch (\Exception $e) {
             Log::error(__CLASS__, ['msg' => $e->getMessage()]);
 
-            return new MessageResource(__('msg.serverNotAvailable'),500);
+            return ErrorResource::make(new AppErrorService(500, __('msg.serverNotAvailable'), $e->getMessage()));
         }
     }
 
     /**
      * @param array $data
-     * @return JsonResource
+     * @return JsonResource|JsonResponse
      */
-    public function store(array $data): JsonResource
+    public function store(array $data): JsonResource|JsonResponse
     {
         DB::beginTransaction();
 
         try {
-            $data['owner'] = auth('api')->id();
-            CabinetCredit::create($data);
+            $data['owner_id'] = auth('api')->id();
+            $credit = CabinetCredit::create($data);
 
             DB::commit();
 
-            return new MessageResource(__('msg.created'), 200);
+            return CabinetCreditResource::make($credit);
         } catch (\Exception $e) {
 
             DB::rollBack();
             Log::error(__CLASS__, ['msg' => $e->getMessage()]);
 
-            return new MessageResource(__('msg.serverNotAvailable'),500);
+            return ErrorResource::make(new AppErrorService(500, __('msg.serverNotAvailable'), $e->getMessage()));
         }
     }
 
     /**
      * @param array $data
      * @param int $id
-     * @return JsonResource
+     * @return JsonResource|JsonResponse
      */
-    public function update(array $data, int $id): JsonResource
+    public function update(array $data, int $id): JsonResource|JsonResponse
     {
         DB::beginTransaction();
 
         try {
             $credit = CabinetCredit::findOrFail($id);
+
+            if (!$credit) {
+                return ErrorResource::make(new AppErrorService(404, __('msg.credit.notFound')));
+            }
+
             $credit->update($data);
 
             DB::commit();
 
-            return new MessageResource(__('msg.updated'), 200);
+            return CabinetCreditResource::make($credit);
         } catch (\Exception $e) {
 
             DB::rollBack();
             Log::error(__CLASS__, ['msg' => $e->getMessage()]);
 
-            return new MessageResource(__('msg.serverNotAvailable'),500);
+            return ErrorResource::make(new AppErrorService(500, __('msg.serverNotAvailable'), $e->getMessage()));
         }
     }
 
     /**
      * @param int $id
-     * @return JsonResource
+     * @return JsonResource|JsonResponse
      */
-    public function destroy(int $id): JsonResource
+    public function destroy(int $id): JsonResource|JsonResponse
     {
         DB::beginTransaction();
 
         try {
-            $credit = CabinetCredit::findOrFail($id);
+            $credit = CabinetCredit::find($id);
+
+            if (!$credit) {
+                return ErrorResource::make(new AppErrorService(404, __('msg.credit.notFound')));
+            }
+
             $credit->delete();
 
             DB::commit();
 
-            return new MessageResource(__('msg.deleted'), 200);
+            return CabinetCreditResource::make($credit);
         } catch (\Exception $e) {
 
             DB::rollBack();
             Log::error(__CLASS__, ['msg' => $e->getMessage()]);
 
-            return new MessageResource(__('msg.serverNotAvailable'),500);
+            return ErrorResource::make(new AppErrorService(500, __('msg.serverNotAvailable'), $e->getMessage()));
         }
     }
 
